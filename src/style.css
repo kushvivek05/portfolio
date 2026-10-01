@@ -66,8 +66,13 @@ button {
     align-items: center;
     justify-content: space-between;
     border-bottom: 1px solid #ffffff0d;
-    position: relative;
-    z-index: 5
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #060a12ed;
+    backdrop-filter: blur(14px);
+    z-index: 10
 }
 
 .brand {
@@ -183,6 +188,7 @@ button {
 
 .hero {
     position: relative;
+    margin-top: 66px;
     min-height: 443px;
     display: flex;
     align-items: center;
@@ -1762,7 +1768,9 @@ button {
 }
 
 .light-mode .topbar {
-    border-color: #dbe3ed
+    border-color: #dbe3ed;
+    background: #f5f8fff0;
+    box-shadow: 0 1px 14px #24365612
 }
 
 .light-mode .topnav,
@@ -1974,6 +1982,10 @@ button {
         height: 59px
     }
 
+    .hero {
+        margin-top: 59px
+    }
+
     .topnav {
         gap: 13px
     }
@@ -2178,6 +2190,10 @@ button {
 
     .topbar {
         height: 55px
+    }
+
+    .hero {
+        margin-top: 55px
     }
 
     .brand {
@@ -2754,3 +2770,8 @@ button {
 .light-mode .skill-mark.mark-docker{color:#1769a8}
 .light-mode .skill-mark.mark-react{color:#087e91}
 .light-mode .skill-mark.mark-redis{color:#cf3541}
+.light-mode .project-modal .section-kicker{color:#70baff}
+
+#about,#skills,#projects,#architecture,#experience,#notes,#contact{scroll-margin-top:82px}
+@media(max-width:760px){#about,#skills,#projects,#architecture,#experience,#notes,#contact{scroll-margin-top:74px}}
+@media(max-width:560px){#about,#skills,#projects,#architecture,#experience,#notes,#contact{scroll-margin-top:68px}}

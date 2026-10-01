@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const base = import.meta.env.BASE_URL;
 const resumeUrl = `${base}Vivek-Kushwaha-Resume.pdf`;
@@ -85,6 +85,16 @@ const approaches = [
   { icon: "◎", title: "Team collaboration", text: "Work closely with product, design, QA, and engineering." },
 ];
 
+const navItems = [
+  { label: "Home", id: "top" },
+  { label: "About", id: "about" },
+  { label: "Skills", id: "skills" },
+  { label: "Projects", id: "projects" },
+  { label: "Experience", id: "experience" },
+  { label: "Blog", id: "notes" },
+  { label: "Contact", id: "contact" },
+];
+
 function Arrow({ diagonal = false }) {
   return <span aria-hidden="true" className="arrow">{diagonal ? "↗" : "→"}</span>;
 }
@@ -103,14 +113,38 @@ function App() {
   const [skillFilter, setSkillFilter] = useState("All");
   const [activeProject, setActiveProject] = useState(null);
   const [lightMode, setLightMode] = useState(false);
+  const [activeNav, setActiveNav] = useState("top");
   const allSkills = useMemo(() => skillGroups.flatMap((group) => group.skills.map((skill) => ({ skill, category: group.category }))), []);
   const visibleSkills = skillFilter === "All" ? allSkills : allSkills.filter((item) => item.category === skillFilter);
+
+  useEffect(() => {
+    const sections = navItems
+      .filter(({ id }) => id !== "top")
+      .map(({ id }) => document.getElementById(id))
+      .filter(Boolean);
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((first, second) => first.boundingClientRect.top - second.boundingClientRect.top);
+      if (visible.length) setActiveNav(visible[0].target.id);
+    }, { rootMargin: "-88px 0px -65% 0px", threshold: 0 });
+
+    sections.forEach((section) => observer.observe(section));
+    const setHomeWhenAtTop = () => {
+      if (window.scrollY < 120) setActiveNav("top");
+    };
+    window.addEventListener("scroll", setHomeWhenAtTop, { passive: true });
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", setHomeWhenAtTop);
+    };
+  }, []);
 
   return (
     <div className={`portfolio ${lightMode ? "light-mode" : ""}`} id="top">
       <header className="topbar wrap">
-        <a href="#top" className="brand" aria-label="Vivek Kushwaha home"><span className="brand-symbol">V</span><span>Vivek Kushwaha</span></a>
-        <nav className="topnav" aria-label="Main navigation"><a className="current" href="#top">Home</a><a href="#about">About</a><a href="#skills">Skills</a><a href="#projects">Projects</a><a href="#experience">Experience</a><a href="#notes">Blog</a><a href="#contact">Contact</a></nav>
+        <a href="#top" className="brand" aria-label="Vivek Kushwaha home" onClick={() => setActiveNav("top")}><span className="brand-symbol">V</span><span>Vivek Kushwaha</span></a>
+        <nav className="topnav" aria-label="Main navigation">{navItems.map(({ label, id }) => <a key={id} className={activeNav === id ? "current" : ""} href={`#${id}`} aria-current={activeNav === id ? "location" : undefined} onClick={() => setActiveNav(id)}>{label}</a>)}</nav>
         <div className="header-actions"><button className="theme-toggle" type="button" onClick={() => setLightMode((value) => !value)} aria-label={`Switch to ${lightMode ? "dark" : "light"} theme`}>{lightMode ? "☀" : "☾"}</button><a className="button button-gradient resume-top" href={resumeUrl} target="_blank" rel="noreferrer">Download Resume <span aria-hidden="true">⬇</span></a></div>
       </header>
 
